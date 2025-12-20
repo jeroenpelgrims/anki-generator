@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}Step 1: input text{% endblock title%}
+
+{% block content %}
+<form method="post" enctype="application/x-www-form-urlencoded" action="/translate">
+    <p>
+        This form will translate each line of given text into the selected target language.<br />
+        It will also generate audio files for each word using text-to-speech.<br />
+        Finally, it will format the data into a tab-separated values (TSV) format suitable for Anki import.
+    </p>
+    <label>
+        Source language words
+        <textarea name="input" placeholder="Type the source language words here. Separate by newlines."
+            rows="10"></textarea>
+    </label>
+    <label>
+        Target language
+        <select name="target_language">
+            <option value="en">English</option>
+            <option value="no">Norwegian</option>
+            <option value="el">Greek</option>
+            <option value="nl">Dutch</option>
+        </select>
+    </label>
+    <button type="submit">Generate</button>
+</form>
+{% endblock content %}

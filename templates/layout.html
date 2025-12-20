@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{% block title %}Clean{% endblock title %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css" />
+  </head>
+
+  <body>
+    <h1>{% block title %}{% endblock title %}</h1>
+    <main>{% block content %}{% endblock content %}</main>
+  </body>
+</html>

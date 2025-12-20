@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}Step 2: translate the input{% endblock title%}
+
+{% block content %}
+<form method="post" enctype="application/x-www-form-urlencoded" action="/generate-tsv">
+    <div style="
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    ">
+        <strong>English</strong>
+        <strong>
+            Foreign language (auto translated)<br />
+            <span style="font-size: 0.7rem">You can change these values if they're not correct.</span>
+        </strong>
+        <input type="text" />
+        <input type="text" />
+    </div>
+
+    <button type="submit">Generate TSV</button>
+</form>
+{% endblock content %}
