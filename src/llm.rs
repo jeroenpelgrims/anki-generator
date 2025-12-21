@@ -1,25 +1,31 @@
-use openai_api_rust::chat::*;
-use openai_api_rust::*;
+use async_openai_compat::{
+    Client,
+    config::AzureConfig,
+    types::{
+        ChatCompletionRequestUserMessageArgs, CreateChatCompletionRequestArgs,
+        CreateChatCompletionResponse,
+    },
+};
 
-pub fn send_message(messages: Vec<Message>) -> Message {
-    let auth = Auth::from_env().expect("Failed to load auth from environment");
+pub async fn send_message() -> Result<CreateChatCompletionResponse, Box<dyn std::error::Error>> {
+    let api_key =
+        std::env::var("OPENAI_API_KEY").expect("Failed to load OPENAI_API_KEY from environment");
     let endpoint = std::env::var("MODEL_URI").expect("Failed to load MODEL_URI from environment");
-    let openai = OpenAI::new(auth, &endpoint);
-    let body = ChatBody {
-        model: "gpt-5-mini".to_string(),
-        n: Some(2),
-        stream: Some(false),
-        messages,
-        frequency_penalty: None,
-        presence_penalty: None,
-        max_tokens: None,
-        temperature: None,
-        top_p: None,
-        stop: None,
-        user: None,
-        logit_bias: None,
-    };
-    let rs = openai.chat_completion_create(&body);
-    let choice = rs.unwrap().choices;
-    choice[0].message.to_owned().unwrap()
+    let config = AzureConfig::new()
+        .with_api_base(endpoint)
+        .with_api_key(api_key)
+        .with_api_version("2024-12-01-preview")
+        .with_deployment_id("gpt-5-mini");
+    let client = Client::with_config(config);
+
+    let request = CreateChatCompletionRequestArgs::default()
+        .model("gpt-5-mini")
+        .messages([ChatCompletionRequestUserMessageArgs::default()
+            .content("Your prompt here")
+            .build()?
+            .into()])
+        .build()?;
+
+    let response = client.chat().create(request).await?;
+    Ok(response)
 }
