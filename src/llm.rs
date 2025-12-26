@@ -25,8 +25,9 @@ pub fn get_client() -> Client<AzureConfig> {
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[schemars(deny_unknown_fields)]
 pub struct TranslationResponseItem {
-    pub original_word: String,
-    pub article: String,
+    pub source_article: String,
+    pub source_word: String,
+    pub translated_article: String,
     pub translated_word: String,
 }
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
@@ -53,7 +54,7 @@ pub async fn translate(
     let messages: Vec<ChatCompletionRequestMessage> = vec![ChatCompletionRequestMessage::User(
         ChatCompletionRequestUserMessage {
             content: ChatCompletionRequestUserMessageContent::Text(format!(
-                "Translate the following words to the language of this language code: {}. Put the article in a separate field. The translated word should ONLY contain the word, not the article.\n\n{}",
+                "Translate the following words to the language of this language code: {}. Make sure to also put the articles in separate fields. The translated word should ONLY contain the word, not the article.\n\n{}",
                 target_language,
                 input.join("\n")
             )),

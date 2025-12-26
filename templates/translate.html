@@ -1,41 +1,29 @@
-{% extends "layout.html" %} {% block title %}Step 2: translate the input{%
-endblock title%} {% block content %}
-<form
-  method="post"
-  enctype="application/x-www-form-urlencoded"
-  action="/generate-tsv"
->
-  <div
-    style="
+<h1>Step 2: translate the input</h1>
+<form method="post" enctype="application/x-www-form-urlencoded" action="/generate-tsv">
+  <div style="
       display: grid;
-      grid-template-columns: 1fr min-content 1fr;
+      grid-template-columns: min-content 1fr min-content 1fr min-content;
       gap: 1rem;
       margin-bottom: 1rem;
-    "
-  >
-    <strong>English</strong>
+      align-items: center;
+    ">
+    <strong>Article</strong>
+    <strong>Source language</strong>
     <strong>Article</strong>
     <strong>
       Foreign language (auto translated)<br />
       <span style="font-size: 0.7rem">
-        You can change these values if they're not correct.</span
-      >
+        You can change these values if they're not correct.</span>
     </strong>
+    <strong>Audio</strong>
     {% for item in items %}
-    <input
-      name="input[loop.index]"
-      value="{{ item.original_word }}"
-      type="text"
-    />
-    <input name="input[loop.index]" value="{{ item.article }}" type="text" />
-    <input
-      name="input[loop.index]"
-      value="{{ item.translated_word }}"
-      type="text"
-    />
+    <input name="source_articles[{{loop.index-1}}]" value="{{ item.source_article }}" type="text" />
+    <input name="source_words[{{loop.index-1}}]" value="{{ item.source_word }}" type="text" />
+    <input name="translated_articles[{{loop.index-1}}]" value="{{ item.translated_article }}" type="text" />
+    <input name="translated_words[{{loop.index-1}}]" value="{{ item.translated_word }}" type="text" />
+    <a href="/audio/{{target_language}}/{{item.translated_article}} {{item.translated_word}}" target="_blank">Play</a>
     {% endfor %}
   </div>
 
   <button type="submit">Generate TSV</button>
 </form>
-{% endblock content %}

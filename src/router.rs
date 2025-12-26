@@ -16,6 +16,7 @@ pub fn router() -> Router {
     Router::new()
         .route("/", get(index))
         .route("/translate", post(translate))
+        .route("/audio/{language}/{text}", get(audio))
 }
 
 async fn index() -> IndexTemplate {
@@ -36,5 +37,15 @@ async fn translate(form: Form<Input>) -> Result<impl IntoResponse, AppError> {
         .map(|line| line.to_string())
         .collect::<Vec<_>>();
     let result = llm::translate(input, form.target_language.clone()).await?;
-    Ok(TranslateTemplate { items: result })
+    Ok(TranslateTemplate {
+        items: result,
+        target_language: form.target_language.clone(),
+    })
+}
+
+async fn audio(
+    axum::extract::Path((language, text)): axum::extract::Path<(String, String)>,
+) -> impl IntoResponse {
+    let url = crate::audio::get_url(&text, &language);
+    axum::response::Redirect::temporary(&url)
 }

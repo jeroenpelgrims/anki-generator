@@ -11,4 +11,5 @@ pub struct IndexTemplate {}
 #[template(path = "translate.html")]
 pub struct TranslateTemplate {
     pub items: Vec<TranslationResponseItem>,
+    pub target_language: String,
 }
