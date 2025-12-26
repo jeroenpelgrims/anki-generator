@@ -24,15 +24,21 @@ pub fn get_client() -> Client<AzureConfig> {
 
 #[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[schemars(deny_unknown_fields)]
+pub struct TranslationResponseItem {
+    pub original_word: String,
+    pub article: String,
+    pub translated_word: String,
+}
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+#[schemars(deny_unknown_fields)]
 struct TranslationResponse {
-    text: String,
-    translations: Vec<String>,
+    translations: Vec<TranslationResponseItem>,
 }
 
 pub async fn translate(
     input: Vec<String>,
     target_language: String,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<Vec<TranslationResponseItem>, anyhow::Error> {
     let schema = schemars::schema_for!(TranslationResponse);
     let response_format = ResponseFormat::JsonSchema {
         json_schema: ResponseFormatJsonSchema {
@@ -44,14 +50,16 @@ pub async fn translate(
     };
 
     let client = get_client();
-    let messages: Vec<ChatCompletionRequestMessage> = vec![
-        ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage {
-            content: ChatCompletionRequestUserMessageContent::Text(
-                "Translate the following text in english to 3 random languages: Hello, how are you?".to_string(),
-            ),
+    let messages: Vec<ChatCompletionRequestMessage> = vec![ChatCompletionRequestMessage::User(
+        ChatCompletionRequestUserMessage {
+            content: ChatCompletionRequestUserMessageContent::Text(format!(
+                "Translate the following words to the language of this language code: {}. Put the article in a separate field. The translated word should ONLY contain the word, not the article.\n\n{}",
+                target_language,
+                input.join("\n")
+            )),
             name: None,
-        }),
-    ];
+        },
+    )];
     let request = CreateChatCompletionRequestArgs::default()
         .model("gpt-5-mini")
         .messages(messages)
@@ -60,9 +68,9 @@ pub async fn translate(
         .build()?;
     let response = client.chat().create(request).await?;
     let content = response.choices[0].message.content.as_ref().unwrap();
-    let translation: TranslationResponse = serde_json::from_str(content)?;
+    let translation = serde_json::from_str::<TranslationResponse>(content)?;
 
     println!("Translation response: {:?}", translation);
 
-    Ok(())
+    Ok(translation.translations)
 }
