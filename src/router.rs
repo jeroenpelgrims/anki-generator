@@ -7,6 +7,7 @@ use axum::{
 use serde::Deserialize;
 
 use crate::{
+    audio,
     error::AppError,
     llm,
     templates::{IndexTemplate, TranslateTemplate},
@@ -45,7 +46,9 @@ async fn translate(form: Form<Input>) -> Result<impl IntoResponse, AppError> {
 
 async fn audio(
     axum::extract::Path((language, text)): axum::extract::Path<(String, String)>,
-) -> impl IntoResponse {
-    let url = crate::audio::get_url(&text, &language);
-    axum::response::Redirect::temporary(&url)
+) -> Result<impl IntoResponse, AppError> {
+    let audio_data = audio::get_audio(&text, &language).await?;
+    let response = ([("content-type", "audio/octet-stream")], audio_data);
+    Ok(response)
+    // Ok((axum::http::header::CONTENT_TYPE, "audio/mpeg", audio_data))
 }
