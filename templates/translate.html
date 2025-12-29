@@ -1,27 +1,47 @@
 <h1>Step 2: translate the input</h1>
-<form method="post" enctype="application/x-www-form-urlencoded" action="/generate-tsv">
-  <div style="
+<form method="post" enctype="application/x-www-form-urlencoded" action="/tsv">
+  <input type="hidden" name="target_language" value="{{ target_language }}" />
+  <div
+    style="
       display: grid;
       grid-template-columns: min-content 1fr min-content 1fr min-content;
       gap: 1rem;
       margin-bottom: 1rem;
       align-items: center;
-    ">
+    "
+  >
     <strong>Article</strong>
     <strong>Source language</strong>
     <strong>Article</strong>
     <strong>
       Foreign language (auto translated)<br />
       <span style="font-size: 0.7rem">
-        You can change these values if they're not correct.</span>
+        You can change these values if they're not correct.</span
+      >
     </strong>
     <strong>Audio</strong>
     {% for item in items %}
-    <input name="source_articles[{{loop.index-1}}]" value="{{ item.source_article }}" type="text" />
-    <input name="source_words[{{loop.index-1}}]" value="{{ item.source_word }}" type="text" />
-    <input name="translated_articles[{{loop.index-1}}]" value="{{ item.translated_article }}" type="text" />
-    <input name="translated_words[{{loop.index-1}}]" value="{{ item.translated_word }}" type="text" />
-    <a href="/audio/{{target_language}}/{{item.translated_article}} {{item.translated_word}}" target="_blank">Play</a>
+    <input
+      name="source_articles"
+      value="{{ item.source_article }}"
+      type="text"
+    />
+    <input name="source_words" value="{{ item.source_word }}" type="text" />
+    <input
+      name="translated_articles"
+      value="{{ item.translated_article }}"
+      type="text"
+    />
+    <input
+      name="translated_words"
+      value="{{ item.translated_word }}"
+      type="text"
+    />
+    <a
+      href="/audio/{{target_language}}/{{item.translated_article}} {{item.translated_word}}"
+      target="_blank"
+      >Play</a
+    >
     {% endfor %}
   </div>
 
