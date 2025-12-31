@@ -1,51 +1,38 @@
 <h1>Step 2: translate the input</h1>
 <form method="post" enctype="application/x-www-form-urlencoded" action="/tsv">
   <input type="hidden" name="target_language" value="{{ target_language }}" />
-  <div
-    style="
+  <div style="
       display: grid;
       grid-template-columns: min-content 1fr min-content 1fr min-content;
       gap: 1rem;
       margin-bottom: 1rem;
       align-items: center;
-    "
-  >
+    ">
     <strong>Article</strong>
     <strong>Source language</strong>
     <strong>Article</strong>
     <strong>
       Foreign language (auto translated)<br />
       <span style="font-size: 0.7rem">
-        You can change these values if they're not correct.</span
-      >
+        You can change these values if they're not correct.</span>
     </strong>
     <strong>Audio</strong>
     {% for item in items %}
-    <input
-      name="source_articles"
-      value="{{ item.source_article }}"
-      type="text"
-    />
+    <input name="source_articles" value="{{ item.source_article }}" type="text" />
     <input name="source_words" value="{{ item.source_word }}" type="text" />
-    <input
-      name="translated_articles"
-      value="{{ item.translated_article }}"
-      type="text"
-    />
-    <input
-      name="translated_words"
-      value="{{ item.translated_word }}"
-      type="text"
-    />
-    <a
-      href="/audio/{{target_language}}/{{item.translated_article}} {{item.translated_word}}"
-      target="_blank"
-      >Play</a
-    >
+    <input name="translated_articles" value="{{ item.translated_article }}" type="text" />
+    <input name="translated_words" value="{{ item.translated_word }}" type="text" />
+    <button type="button" hx-get="/audio/preview" hx-include="input[name='target_language'],previous"
+      hx-target="#audio_preview" hx-swap="innerHTML">
+      Play
+    </button>
     {% endfor %}
   </div>
 
-  <button type="submit">Generate zip file</button>
+  <div style="display: flex; align-items: center; gap: 1rem;">
+    <button type="submit">Generate zip file</button>
+    <span id="audio_preview"></span>
+  </div>
 </form>
 
 <section class="flash muted">
@@ -55,24 +42,24 @@
     Download the zip file and extract it somewhere.
   </p>
   <p>
-    First import the audio files.<br/>
-    This must be done manually.<br/>
+    First import the audio files.<br />
+    This must be done manually.<br />
 
-    <ol>
-      <li>In the Anki desktop application click Tools > Check Media</li>
-      <li>In the bottom left of the window, click "View Files"</li>
-      <li>Copy all .mp3 audio files from the downloaded zip into this folder</li>
-    </ol>
+  <ol>
+    <li>In the Anki desktop application click Tools > Check Media</li>
+    <li>In the bottom left of the window, click "View Files"</li>
+    <li>Copy all .mp3 audio files from the downloaded zip into this folder</li>
+  </ol>
   </p>
   <p>
     Then import the notes.
-    <ol>
-      <li>In the Anki desktop application, go to File > Import.</li>
-      <li>Select the TSV file that is in the zip file.</li>
-      <li>Select your note type. (This note type should have a field for the audio file)</li>
-      <li>Match up the fields correctly in the bottom.</li>
-      <li>Click import.</li>
-    </ol>
-    
+  <ol>
+    <li>In the Anki desktop application, go to File > Import.</li>
+    <li>Select the TSV file that is in the zip file.</li>
+    <li>Select your note type. (This note type should have a field for the audio file)</li>
+    <li>Match up the fields correctly in the bottom.</li>
+    <li>Click import.</li>
+  </ol>
+
   </p>
 </section>

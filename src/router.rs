@@ -1,5 +1,6 @@
 use axum::{
     Router,
+    extract::Query,
     http::HeaderValue,
     response::IntoResponse,
     routing::{get, post},
@@ -21,6 +22,7 @@ pub fn router() -> Router {
         .route("/translate", post(translate))
         .route("/tsv", post(get_tsv))
         .route("/audio/{language}/{text}", get(audio))
+        .route("/audio/preview", get(audio_preview))
 }
 
 async fn index() -> IndexTemplate {
@@ -80,5 +82,23 @@ async fn get_tsv(Form(form): Form<TsvForm>) -> Result<impl IntoResponse, AppErro
         HeaderValue::from_static("attachment; filename=archive.zip"),
     );
 
+    Ok(response)
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AudioPreviewParams {
+    pub target_language: String,
+    pub translated_words: String,
+}
+async fn audio_preview(
+    Query(params): Query<AudioPreviewParams>,
+) -> Result<impl IntoResponse, AppError> {
+    let language = params.target_language;
+    let text = params.translated_words;
+
+    let response = format!(
+        "<audio autoplay src=\"/audio/{}/{}\"></audio>",
+        language, text
+    );
     Ok(response)
 }
