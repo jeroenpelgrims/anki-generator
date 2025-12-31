@@ -5,6 +5,7 @@ pub mod error;
 mod llm;
 mod router;
 mod templates;
+mod zip;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
