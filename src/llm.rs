@@ -2,7 +2,8 @@ use async_openai_compat::{
     Client,
     config::AzureConfig,
     types::{
-        ChatCompletionRequestMessage, ChatCompletionRequestUserMessage,
+        ChatCompletionRequestMessage, ChatCompletionRequestSystemMessage,
+        ChatCompletionRequestSystemMessageContent, ChatCompletionRequestUserMessage,
         ChatCompletionRequestUserMessageContent, CreateChatCompletionRequestArgs, ResponseFormat,
         ResponseFormatJsonSchema,
     },
@@ -51,16 +52,28 @@ pub async fn translate(
     };
 
     let client = get_client();
-    let messages: Vec<ChatCompletionRequestMessage> = vec![ChatCompletionRequestMessage::User(
-        ChatCompletionRequestUserMessage {
+    let messages: Vec<ChatCompletionRequestMessage> = vec![
+        ChatCompletionRequestMessage::System(ChatCompletionRequestSystemMessage {
+            content: ChatCompletionRequestSystemMessageContent::Text(format!(
+                "You are an expert translator.
+                You will translate a list of words from their source language to a target language.
+                You will respond ONLY in a JSON format as specified below.
+                Make sure to include the articles for both source and translated words.
+            "
+            )),
+            name: None,
+        }),
+        ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage {
             content: ChatCompletionRequestUserMessageContent::Text(format!(
-                "Translate the following words to the language of this language code: {}. Make sure to also put the articles in separate fields. The translated word should ONLY contain the word, not the article.\n\n{}",
+                "Translate the following words to this language: {}.
+                Don't forget to include the correct article for both the source and translated words.
+                The translated word should ONLY contain the word, not the article.\n\n{}",
                 target_language,
                 input.join("\n")
             )),
             name: None,
-        },
-    )];
+        }),
+    ];
     let request = CreateChatCompletionRequestArgs::default()
         .model("gpt-5-mini")
         .messages(messages)
@@ -70,8 +83,6 @@ pub async fn translate(
     let response = client.chat().create(request).await?;
     let content = response.choices[0].message.content.as_ref().unwrap();
     let translation = serde_json::from_str::<TranslationResponse>(content)?;
-
-    println!("Translation response: {:?}", translation);
 
     Ok(translation.translations)
 }

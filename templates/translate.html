@@ -45,5 +45,34 @@
     {% endfor %}
   </div>
 
-  <button type="submit">Generate TSV</button>
+  <button type="submit">Generate zip file</button>
 </form>
+
+<section class="flash muted">
+  <h2>How to import this into Anki</h2>
+
+  <p>
+    Download the zip file and extract it somewhere.
+  </p>
+  <p>
+    First import the audio files.<br/>
+    This must be done manually.<br/>
+
+    <ol>
+      <li>In the Anki desktop application click Tools > Check Media</li>
+      <li>In the bottom left of the window, click "View Files"</li>
+      <li>Copy all .mp3 audio files from the downloaded zip into this folder</li>
+    </ol>
+  </p>
+  <p>
+    Then import the notes.
+    <ol>
+      <li>In the Anki desktop application, go to File > Import.</li>
+      <li>Select the TSV file that is in the zip file.</li>
+      <li>Select your note type. (This note type should have a field for the audio file)</li>
+      <li>Match up the fields correctly in the bottom.</li>
+      <li>Click import.</li>
+    </ol>
+    
+  </p>
+</section>
